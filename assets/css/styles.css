@@ -38,15 +38,18 @@
   align-items: center;
   justify-content: center;
   gap: 2rem;
-  background: var(--bg-elev);
-  border-top: 1px solid var(--border);
+  background: var(--bg);
+  /* border-top: 1px solid var(--border); */
   padding: 0.7rem 1rem;
   font-size: 0.98rem;
   color: var(--muted);
 }
 .org-bar img {
+  /* Force a consistent visual height for all organizer logos regardless of their intrinsic widths.
+     Width is allowed to scale automatically to preserve aspect ratio.
+     Use max-height instead of height to allow SVGs with internal padding to scale properly. */
   height: 70px;
-  max-width: 120px;
+  width: auto;
   object-fit: contain;
   vertical-align: middle;
   background: #fff0;
@@ -211,8 +214,8 @@ body {
 .btn[aria-disabled="true"] { opacity: .6; pointer-events: none; }
 
 /* Footer */
-.site-footer { border-top: 1px solid var(--border); margin-top: 2rem; background: var(--bg-elev); }
-.footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 72px; }
+.site-footer { border-top: 1px solid var(--border); margin-top: 2rem; background: var(--bg-elev); text-align: center; }
+.footer-inner { display: flex; align-items: center; justify-content: center; gap: 1rem; min-height: 72px; flex-wrap: wrap; }
 .back-to-top { text-decoration: none; color: var(--text); background: color-mix(in oklab, var(--primary) 14%, transparent); border: 1px solid var(--border); padding: .45rem .65rem; border-radius: .5rem; opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity .2s ease, transform .2s ease; }
 .back-to-top.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
 
