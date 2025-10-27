@@ -30,16 +30,21 @@ dropdownParents.forEach(parent => {
   
   // Prevent navigation and toggle dropdown on click
   parentLink.addEventListener('click', (e) => {
-    e.preventDefault(); // Always prevent default navigation for dropdown parents
-    parent.classList.toggle('open');
+    e.preventDefault(); // Prevent navigation
+    e.stopPropagation(); // Stop event from bubbling
+    
+    const isOpen = parent.classList.toggle('open');
+    parentLink.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     
     // Close other dropdowns
     dropdownParents.forEach(otherParent => {
       if (otherParent !== parent) {
         otherParent.classList.remove('open');
+        const otherLink = otherParent.querySelector('a');
+        if (otherLink) otherLink.setAttribute('aria-expanded', 'false');
       }
     });
-  });
+  }, true); // Use capture phase to ensure this runs first
 });
 
 // Close dropdowns when clicking outside
@@ -57,17 +62,22 @@ dropdownParents.forEach(parent => {
   
   parentLink.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault(); // Always prevent default navigation for dropdown parents
-      parent.classList.toggle('open');
+      e.preventDefault(); // Prevent navigation
+      e.stopPropagation(); // Stop event from bubbling
+      
+      const isOpen = parent.classList.toggle('open');
+      parentLink.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
       
       // Close other dropdowns
       dropdownParents.forEach(otherParent => {
         if (otherParent !== parent) {
           otherParent.classList.remove('open');
+          const otherLink = otherParent.querySelector('a');
+          if (otherLink) otherLink.setAttribute('aria-expanded', 'false');
         }
       });
     }
-  });
+  }, true); // Use capture phase to ensure this runs first
 });
 
 // Back to top current year (force 2026 for CVWW 2026)
@@ -89,6 +99,11 @@ const header = document.querySelector('.site-header');
 if ('scrollBehavior' in document.documentElement.style && header) {
   const offset = () => header.getBoundingClientRect().height + 8;
   document.querySelectorAll('a[href^="#"]').forEach(link => {
+    // Skip dropdown parent links - they should only toggle menus
+    if (link.parentElement.classList.contains('has-dropdown')) {
+      return;
+    }
+    
     link.addEventListener('click', (e) => {
       const id = link.getAttribute('href');
       if (!id || id === '#') return;
