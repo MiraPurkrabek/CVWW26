@@ -6,38 +6,39 @@ if (navToggle && siteNav) {
     const open = siteNav.classList.toggle('open');
     navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
-  // Close nav on link click (mobile) - except for dropdown parents
-  siteNav.querySelectorAll('a').forEach(a => a.addEventListener('click', (e) => {
-    // Don't close if clicking a dropdown parent
-    if (a.parentElement.classList.contains('has-dropdown') && !a.parentElement.querySelector('.dropdown-menu a').contains(e.target)) {
-      return;
-    }
-    if (siteNav.classList.contains('open')) {
-      siteNav.classList.remove('open');
-      navToggle.setAttribute('aria-expanded', 'false');
-    }
-  }));
+  
+  // Close mobile nav only when clicking on leaf items (links inside dropdown or regular links)
+  siteNav.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', (e) => {
+      // Don't close if clicking a dropdown parent (node)
+      if (a.parentElement.classList.contains('has-dropdown')) {
+        return; // This is a node, not a leaf - don't close nav
+      }
+      // This is a leaf - close the mobile nav
+      if (siteNav.classList.contains('open')) {
+        siteNav.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
 }
 
-// Dropdown menu handling for mobile
+// Dropdown menu handling for all screen sizes
 const dropdownParents = document.querySelectorAll('.has-dropdown');
 dropdownParents.forEach(parent => {
   const parentLink = parent.querySelector('a');
   
-  // For mobile: toggle dropdown on click
+  // Prevent navigation and toggle dropdown on click
   parentLink.addEventListener('click', (e) => {
-    // Only handle on mobile
-    if (window.innerWidth <= 860) {
-      e.preventDefault();
-      parent.classList.toggle('open');
-      
-      // Close other dropdowns
-      dropdownParents.forEach(otherParent => {
-        if (otherParent !== parent) {
-          otherParent.classList.remove('open');
-        }
-      });
-    }
+    e.preventDefault(); // Always prevent default navigation for dropdown parents
+    parent.classList.toggle('open');
+    
+    // Close other dropdowns
+    dropdownParents.forEach(otherParent => {
+      if (otherParent !== parent) {
+        otherParent.classList.remove('open');
+      }
+    });
   });
 });
 
@@ -56,10 +57,15 @@ dropdownParents.forEach(parent => {
   
   parentLink.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
-      if (window.innerWidth <= 860) {
-        e.preventDefault();
-        parent.classList.toggle('open');
-      }
+      e.preventDefault(); // Always prevent default navigation for dropdown parents
+      parent.classList.toggle('open');
+      
+      // Close other dropdowns
+      dropdownParents.forEach(otherParent => {
+        if (otherParent !== parent) {
+          otherParent.classList.remove('open');
+        }
+      });
     }
   });
 });
