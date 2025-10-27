@@ -6,14 +6,63 @@ if (navToggle && siteNav) {
     const open = siteNav.classList.toggle('open');
     navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
-  // Close nav on link click (mobile)
-  siteNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  // Close nav on link click (mobile) - except for dropdown parents
+  siteNav.querySelectorAll('a').forEach(a => a.addEventListener('click', (e) => {
+    // Don't close if clicking a dropdown parent
+    if (a.parentElement.classList.contains('has-dropdown') && !a.parentElement.querySelector('.dropdown-menu a').contains(e.target)) {
+      return;
+    }
     if (siteNav.classList.contains('open')) {
       siteNav.classList.remove('open');
       navToggle.setAttribute('aria-expanded', 'false');
     }
   }));
 }
+
+// Dropdown menu handling for mobile
+const dropdownParents = document.querySelectorAll('.has-dropdown');
+dropdownParents.forEach(parent => {
+  const parentLink = parent.querySelector('a');
+  
+  // For mobile: toggle dropdown on click
+  parentLink.addEventListener('click', (e) => {
+    // Only handle on mobile
+    if (window.innerWidth <= 860) {
+      e.preventDefault();
+      parent.classList.toggle('open');
+      
+      // Close other dropdowns
+      dropdownParents.forEach(otherParent => {
+        if (otherParent !== parent) {
+          otherParent.classList.remove('open');
+        }
+      });
+    }
+  });
+});
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.has-dropdown')) {
+    dropdownParents.forEach(parent => {
+      parent.classList.remove('open');
+    });
+  }
+});
+
+// Keyboard navigation for dropdowns
+dropdownParents.forEach(parent => {
+  const parentLink = parent.querySelector('a');
+  
+  parentLink.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      if (window.innerWidth <= 860) {
+        e.preventDefault();
+        parent.classList.toggle('open');
+      }
+    }
+  });
+});
 
 // Back to top current year (force 2026 for CVWW 2026)
 const yearEl = document.getElementById('year');

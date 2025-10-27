@@ -34,12 +34,23 @@
 
         <nav id="site-nav" class="site-nav" aria-label="Primary">
           <ul>
-            <li><a href="#about">About</a></li>
+            <li class="has-dropdown">
+              <a href="#about">About</a>
+              <ul class="dropdown-menu">
+                <li><a href="#about">About CVWW</a></li>
+                <li><a href="#venue">Venue</a></li>
+                <li><a href="previous-editions.html">Previous Editions</a></li>
+              </ul>
+            </li>
             <li><a href="#dates">Dates</a></li>
-            <li><a href="#venue">Venue</a></li>
             <li><a href="#registration">Registration</a></li>
-            <li><a href="#cfp">Call for Papers</a></li>
-            <!-- <li><a href="#program">Program</a></li> -->
+            <li class="has-dropdown">
+              <a href="#cfp">Submit a Paper</a>
+              <ul class="dropdown-menu">
+                <li><a href="#cfp">Call for Papers</a></li>
+                <li><a href="#submission">Submission Portal</a></li>
+              </ul>
+            </li>
             <li><a href="#contact">Contact</a></li>
           </ul>
         </nav>
@@ -162,6 +173,16 @@
           <p>Submission format and portal will be published shortly.</p>
           <div class="cta">
             <a class="btn btn-ghost" href="#" aria-disabled="true">Submission portal (TBA)</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="submission" class="section">
+        <div class="container">
+          <h2>Submission Portal</h2>
+          <p>The submission portal will be available soon. Please check back later for submission guidelines and the link to submit your paper.</p>
+          <div class="cta">
+            <a class="btn btn-ghost" href="#" aria-disabled="true">Portal opens soon</a>
           </div>
         </div>
       </section>
