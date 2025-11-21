@@ -122,3 +122,94 @@ if ('scrollBehavior' in document.documentElement.style && header) {
     }, { passive: false });
   });
 }
+
+// Submission deadline countdown
+// Assumption: Deadline is AoE end (23:59:59 UTC) unless changed via data-deadline attribute.
+// To change, edit the data-deadline on the .countdown span in HTML.
+const countdownEls = document.querySelectorAll('.countdown[data-deadline]');
+
+function isDSTEurope(year) {
+  // DST starts last Sunday of March, ends last Sunday of October (Europe/Prague rules)
+  const lastSunday = (month) => {
+    // month: 2=March, 9=October (0-based)
+    const d = new Date(Date.UTC(year, month + 1, 0)); // last day of month in UTC
+    // Walk backwards to Sunday
+    while (d.getUTCDay() !== 0) d.setUTCDate(d.getUTCDate() - 1);
+    return d; // UTC date of last Sunday
+  };
+  const start = lastSunday(2); // March
+  // DST change at 01:00 UTC -> after this moment DST applies
+  start.setUTCHours(1,0,0,0);
+  const end = lastSunday(9); // October
+  end.setUTCHours(1,0,0,0); // moment DST ends
+  const nowUTC = Date.now();
+  return nowUTC >= start.getTime() && nowUTC < end.getTime();
+}
+
+function parseCentralEuropean(deadlineStr) {
+  // Accept formats: YYYY-MM-DDTHH:MM[:SS] optional seconds, no timezone
+  const m = deadlineStr.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})(?::(\d{2}))?$/);
+  if (!m) return NaN;
+  const [_, y, mo, d, h, mi, s] = m;
+  const year = +y; const month = +mo; const day = +d; const hour = +h; const min = +mi; const sec = +(s||'0');
+  // Determine offset: CET = UTC+1, CEST = UTC+2 during DST.
+  const dst = isDSTEurope(year);
+  const offsetHours = dst ? 2 : 1;
+  // Produce UTC timestamp by subtracting offset.
+  return Date.UTC(year, month - 1, day, hour - offsetHours, min, sec);
+}
+function formatRemaining(ms) {
+  if (ms <= 0) return null;
+  const dMs = 24 * 60 * 60 * 1000;
+  const hMs = 60 * 60 * 1000;
+  const mMs = 60 * 1000;
+  const days = Math.floor(ms / dMs);
+  const hours = Math.floor((ms % dMs) / hMs);
+  const mins = Math.floor((ms % hMs) / mMs);
+  if (days > 0) return `${days}d ${hours}h ${mins}m`;
+  if (hours > 0) return `${hours}h ${mins}m`;
+  if (mins > 1) return `${mins}m`;
+  if (mins === 1) return `1m`;
+  // Under a minute: show seconds (rare; only during final minute)
+  const secs = Math.floor((ms % mMs) / 1000);
+  if (secs > 0) return `${secs}s left`;
+  return null;
+}
+
+function updateCountdown() {
+  const now = Date.now();
+  countdownEls.forEach(el => {
+    const deadlineStr = el.getAttribute('data-deadline');
+    let deadlineMs;
+    if (el.getAttribute('data-tz') === 'CET') {
+      // Treat given string as Central European local time (handles DST).
+      deadlineMs = parseCentralEuropean(deadlineStr);
+    } else {
+      deadlineMs = Date.parse(deadlineStr);
+    }
+    if (isNaN(deadlineMs)) {
+      el.textContent = 'invalid deadline';
+      el.setAttribute('data-expired', 'true');
+      el.setAttribute('aria-label', 'Invalid deadline date');
+      return;
+    }
+    const diff = deadlineMs - now;
+    const remaining = formatRemaining(diff);
+    if (!remaining) {
+      el.textContent = 'Deadline passed';
+      el.setAttribute('data-expired', 'true');
+      el.setAttribute('aria-label', 'Paper submission deadline has passed');
+    } else {
+      el.textContent = remaining;
+      el.removeAttribute('data-expired');
+      el.setAttribute('aria-label', `Time remaining until paper submission deadline: ${remaining}`);
+      el.title = `Remaining until deadline: ${remaining}`;
+    }
+  });
+}
+if (countdownEls.length) {
+  updateCountdown();
+  // Update every minute; also a quick 1s tick to smooth display if user opens near rollover
+  setInterval(updateCountdown, 60 * 1000);
+  setTimeout(updateCountdown, 1000);
+}

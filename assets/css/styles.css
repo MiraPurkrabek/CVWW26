@@ -405,11 +405,26 @@ body {
 }
 
 .key-dates { list-style: none; padding: 0; border-radius: .8rem; overflow: hidden; border: 1px solid var(--border); background: var(--card); }
-.key-dates li { display: grid; grid-template-columns: 220px 1fr; gap: 1rem; padding: .85rem 1rem; }
+.key-dates li { display: grid; grid-template-columns: 220px 220px 1fr; gap: 1rem; padding: .85rem 1rem; align-items: center; }
 .key-dates li:nth-child(odd) { background: color-mix(in oklab, var(--primary) 8%, transparent); }
 .key-dates .k { color: var(--muted); }
 .key-dates .v { color: var(--text); font-weight: 500; }
-@media (max-width: 640px) { .key-dates li { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { 
+  .key-dates li { grid-template-columns: 1fr; }
+  .key-dates .countdown { margin-top: .25rem; display: inline-block; font-size: 0.7rem; }
+}
+
+/* Countdown (light, subtle) */
+.key-dates .countdown {
+  font-weight: 300;
+  color: color-mix(in oklab, var(--muted) 100%, var(--text));
+  font-size: 0.85rem;
+  letter-spacing: .35px;
+  align-self: center;
+  white-space: nowrap;
+  opacity: .85;
+}
+.key-dates .countdown[data-expired="true"] { color: var(--muted); opacity: .7; }
 
 /* Links & Buttons */
 .link { color: var(--primary); text-decoration: none; }
