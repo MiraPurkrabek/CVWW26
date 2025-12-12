@@ -1,3 +1,6 @@
+.text-justify {
+  text-align: justify;
+}
 /* Hero image side-by-side layout */
 .hero-inner {
   display: grid;
@@ -114,6 +117,10 @@ body {
               radial-gradient(1000px 560px at -10% 20%, rgba(167,139,250,.08), transparent) no-repeat,
               var(--bg);
   line-height: 1.6;
+}
+
+p {
+  text-align: justify;
 }
 
 .skip-link {
@@ -286,6 +293,7 @@ body {
 .section h2 { margin-top: 0; font-size: 1.7rem; letter-spacing: .2px; }
 .bullets { list-style: none; padding: 0; columns: 2; column-gap: 2rem; }
 .bullets li { padding-left: 1.4rem; position: relative; break-inside: avoid; -webkit-column-break-inside: avoid; }
+.bullets li { text-align: justify; }
 .bullets li::before { content: "•"; position: absolute; left: 0; color: var(--secondary); }
 @media (max-width: 700px) { .bullets { columns: 1; } }
 
