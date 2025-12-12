@@ -123,6 +123,37 @@ if ('scrollBehavior' in document.documentElement.style && header) {
   });
 }
 
+// Auto-alternate section backgrounds so authors only set the first one manually.
+const alternatingSections = document.querySelectorAll('main > section.section');
+if (alternatingSections.length) {
+  let shouldAlt = alternatingSections[0].classList.contains('alt');
+  alternatingSections.forEach(section => {
+    section.classList.toggle('alt', shouldAlt);
+    shouldAlt = !shouldAlt;
+  });
+}
+
+// News list fade indicators
+const newsScrollers = document.querySelectorAll('.news-scroller');
+newsScrollers.forEach(scroller => {
+  const updateFade = () => {
+    const { scrollTop, scrollHeight, clientHeight } = scroller;
+    if (scrollTop > 2) scroller.classList.add('has-top-fade');
+    else scroller.classList.remove('has-top-fade');
+
+    if (scrollTop + clientHeight < scrollHeight - 2) scroller.classList.add('has-bottom-fade');
+    else scroller.classList.remove('has-bottom-fade');
+  };
+
+  updateFade();
+  scroller.addEventListener('scroll', updateFade, { passive: true });
+
+  if (typeof ResizeObserver !== 'undefined') {
+    const resizeObserver = new ResizeObserver(updateFade);
+    resizeObserver.observe(scroller);
+  }
+});
+
 // Submission deadline countdown
 // Assumption: Deadline is AoE end (23:59:59 UTC) unless changed via data-deadline attribute.
 // To change, edit the data-deadline on the .countdown span in HTML.
