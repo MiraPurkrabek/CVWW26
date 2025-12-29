@@ -296,6 +296,11 @@ p {
 .bullets li { text-align: justify; }
 .bullets li::before { content: "•"; position: absolute; left: 0; color: var(--secondary); }
 @media (max-width: 700px) { .bullets { columns: 1; } }
+.tribullets { list-style: none; padding: 0; columns: 3; column-gap: 2rem; }
+.tribullets li { padding-left: 1.4rem; position: relative; break-inside: avoid; -webkit-column-break-inside: avoid; }
+.tribullets li { text-align: justify; }
+.tribullets li::before { content: "•"; position: absolute; left: 0; color: var(--secondary); }
+@media (max-width: 700px) { .tribullets { columns: 1; } }
 
 .fee-grid {
   display: grid;
@@ -977,6 +982,7 @@ p {
   margin: 0;
   font-size: 0.9rem;
   color: var(--muted);
+  text-align: center;
   line-height: 1.4;
 }
 
