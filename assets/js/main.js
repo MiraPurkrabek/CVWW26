@@ -133,6 +133,38 @@ if (alternatingSections.length) {
   });
 }
 
+// Allow promo cards with data-link to be clickable while preserving nested links.
+const linkedRateCards = document.querySelectorAll('.rate-card[data-link]');
+linkedRateCards.forEach(card => {
+  const url = card.getAttribute('data-link');
+  if (!url) return;
+
+  const openCardLink = () => {
+    const target = card.getAttribute('data-link-target');
+    if (target === '_blank') {
+      const win = window.open(url, '_blank');
+      if (win) win.opener = null;
+    } else {
+      window.location.assign(url);
+    }
+  };
+
+  card.setAttribute('role', 'link');
+  card.setAttribute('tabindex', '0');
+
+  card.addEventListener('click', (event) => {
+    if (event.target.closest('a, button')) return;
+    openCardLink();
+  });
+
+  card.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
+      event.preventDefault();
+      openCardLink();
+    }
+  });
+});
+
 // News list fade indicators
 const newsScrollers = document.querySelectorAll('.news-scroller');
 newsScrollers.forEach(scroller => {
